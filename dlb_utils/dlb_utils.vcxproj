@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release_lite|Win32">
+      <Configuration>release_lite</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release_lite|x64">
+      <Configuration>release_lite</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\libs\fmt\format.cpp" />
+    <ClCompile Include="..\libs\fmt\os.cpp" />
+    <ClCompile Include="dlb_calendar.cpp" />
+    <ClCompile Include="dlb_config.cpp" />
+    <ClCompile Include="dlb_debug.cpp" />
+    <ClCompile Include="dlb_event.cpp" />
+    <ClCompile Include="dlb_filesystem.cpp" />
+    <ClCompile Include="dlb_file_loader.cpp" />
+    <ClCompile Include="dlb_deserializer.cpp" />
+    <ClCompile Include="dlb_dictionary.cpp" />
+    <ClCompile Include="dlb_http.cpp" />
+    <ClCompile Include="dlb_key.cpp" />
+    <ClCompile Include="dlb_log.cpp" />
+    <ClCompile Include="dlb_main.cpp" />
+    <ClCompile Include="dlb_math.cpp" />
+    <ClCompile Include="dlb_packfile.cpp" />
+    <ClCompile Include="dlb_serializer.cpp" />
+    <ClCompile Include="dlb_sound.cpp" />
+    <ClCompile Include="dlb_sound_positioning.cpp" />
+    <ClCompile Include="dlb_sql.cpp" />
+    <ClCompile Include="dlb_state.cpp" />
+    <ClCompile Include="dlb_string_manager.cpp" />
+    <ClCompile Include="dlb_task.cpp" />
+    <ClCompile Include="dlb_task_manager.cpp" />
+    <ClCompile Include="dlb_timer.cpp" />
+    <ClCompile Include="dlb_value.cpp" />
+    <ClCompile Include="dlb_vector.cpp" />
+    <ClCompile Include="dlb_worker.cpp" />
+    <ClCompile Include="dlb_wstring_manager.cpp" />
+    <ClCompile Include="dlb_speak.cpp" />
+    <ClCompile Include="third-party\base64.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dlb_calendar.h" />
+    <ClInclude Include="dlb_config.h" />
+    <ClInclude Include="dlb_debug.h" />
+    <ClInclude Include="dlb_event.h" />
+    <ClInclude Include="dlb_filesystem.h" />
+    <ClInclude Include="dlb_file_loader.h" />
+    <ClInclude Include="dlb_constantes.h" />
+    <ClInclude Include="dlb_deserializer.h" />
+    <ClInclude Include="dlb_dictionary.h" />
+    <ClInclude Include="dlb_format.h" />
+    <ClInclude Include="dlb_http.h" />
+    <ClInclude Include="dlb_key.h" />
+    <ClInclude Include="dlb_log.h" />
+    <ClInclude Include="dlb_main.h" />
+    <ClInclude Include="dlb_math.h" />
+    <ClInclude Include="dlb_packfile.h" />
+    <ClInclude Include="dlb_serializer.h" />
+    <ClInclude Include="dlb_sound.h" />
+    <ClInclude Include="dlb_sound_positioning.h" />
+    <ClInclude Include="dlb_sql.h" />
+    <ClInclude Include="dlb_state.h" />
+    <ClInclude Include="dlb_string_manager.h" />
+    <ClInclude Include="dlb_task.h" />
+    <ClInclude Include="dlb_task_manager.h" />
+    <ClInclude Include="dlb_timer.h" />
+    <ClInclude Include="dlb_types.h" />
+    <ClInclude Include="dlb_value.h" />
+    <ClInclude Include="dlb_vector.h" />
+    <ClInclude Include="dlb_worker.h" />
+    <ClInclude Include="dlb_wstring_manager.h" />
+    <ClInclude Include="dlb_speak.h" />
+    <ClInclude Include="third-party\base64.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{a30c1feb-4a9e-4d9d-a6ee-c9596d5c9ea4}</ProjectGuid>
+    <RootNamespace>dlbutils</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\libs\lib\</OutDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <IncludePath>$(ProjectDir)..\libs;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(ProjectDir)..\libs\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\libs\lib</OutDir>
+    <IncludePath>$(ProjectDir)..\libs;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(ProjectDir)..\libs\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\libs\lib</OutDir>
+    <IncludePath>$(ProjectDir)..\libs;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(ProjectDir)..\libs\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+    <TargetName>$(ProjectName)_lite</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>MSVCRT.lib;vcruntime.lib;Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;bass.lib;bass_fx.lib;Tolk.lib;SDL2.lib;SDL2main.lib;sqlite3.lib;libcurl_a.lib;</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <SubSystem>Native</SubSystem>
+    </Lib>
+    <Lib>
+      <RemoveObjects>dlb_timer.obj;dlb_task_manager.obj;dlb_task.obj;dlb_string_manager.obj;dlb_state.obj;dlb_sql.obj;dlb_sound_positioning.obj;dlb_sound.obj;dlb_serializer.obj;dlb_math.obj;dlb_log.obj;dlb_key.obj;dlb_http.obj;dlb_dlb_dictvalue.obj;dlb_dictionary.obj;dlb_deserializer.obj;dlb_file_loader.obj;dlb_filesystem.obj;dlb_window.obj;dlb_tab.obj;dlb_retangle.obj;dlb_point2d.obj;dlb_listbox.obj;dlb_label.obj;dlb_control.obj;dlb_checkbox.obj;dlb_button.obj;dlb_wstring_manager.obj;dlb_vector.obj;</RemoveObjects>
+      <AdditionalOptions>
+      </AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DLB_CPP_20;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ProgramDataBaseFileName />
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <BuildLog>
+      <Path>$(ProjectDir)..\logs\$(MSBuildProjectName).txt</Path>
+    </BuildLog>
+    <Lib>
+      <AdditionalDependencies>MSVCRT.lib;vcruntime.lib;Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;bass.lib;bass_fx.lib;Tolk.lib;sqlite3.lib;libcurl_a.lib;</AdditionalDependencies>
+      <RemoveObjects>dlb_timer.obj;dlb_task_manager.obj;dlb_task.obj;dlb_string_manager.obj;dlb_state.obj;dlb_sql.obj;dlb_sound_positioning.obj;dlb_sound.obj;dlb_serializer.obj;dlb_measure.obj;dlb_math.obj;dlb_log.obj;dlb_key.obj;dlb_http.obj;dlb_dlb_dictvalue.obj;dlb_dictionary.obj;dlb_deserializer.obj;dlb_file_loader.obj;dlb_filesystem.obj;dlb_window.obj;dlb_tab.obj;dlb_retangle.obj;dlb_point2d.obj;dlb_listbox.obj;dlb_label.obj;dlb_control.obj;dlb_checkbox.obj;dlb_button.obj;dlb_wstring_manager.obj;dlb_win32.obj;dlb_vector.obj;</RemoveObjects>
+      <SubSystem>Native</SubSystem>
+      <IgnoreSpecificDefaultLibraries>vcruntime.lib;MSVCRT.lib;LIBCMT.lib;</IgnoreSpecificDefaultLibraries>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DLB_NO_SOUND;_DLB_NO_GUI;_DLB_CPP_20;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <Optimization>MinSpace</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <BuildLog>
+      <Path>$(ProjectDir)..\logs\$(MSBuildProjectName).txt</Path>
+    </BuildLog>
+    <Lib>
+      <AdditionalDependencies>MSVCRT.lib;vcruntime.lib;Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;bass.lib;bass_fx.lib;Tolk.lib;SDL2.lib;SDL2main.lib;sqlite3.lib;libcurl_a.lib;</AdditionalDependencies>
+      <RemoveObjects>dlb_timer.obj;dlb_task_manager.obj;dlb_task.obj;dlb_string_manager.obj;dlb_state.obj;dlb_sql.obj;dlb_sound_positioning.obj;dlb_sound.obj;dlb_serializer.obj;dlb_measure.obj;dlb_math.obj;dlb_log.obj;dlb_key.obj;dlb_http.obj;dlb_dlb_dictvalue.obj;dlb_dictionary.obj;dlb_deserializer.obj;dlb_file_loader.obj;dlb_filesystem.obj;dlb_window.obj;dlb_tab.obj;dlb_retangle.obj;dlb_point2d.obj;dlb_listbox.obj;dlb_label.obj;dlb_control.obj;dlb_checkbox.obj;dlb_button.obj;dlb_wstring_manager.obj;dlb_win32.obj;dlb_vector.obj;</RemoveObjects>
+      <SubSystem>Native</SubSystem>
+      <IgnoreSpecificDefaultLibraries>vcruntime.lib;MSVCRT.lib;LIBCMT.lib;</IgnoreSpecificDefaultLibraries>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
