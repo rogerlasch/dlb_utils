@@ -318,4 +318,10 @@ return chrono::duration_cast<chrono::minutes>(dtn).count();
 }
 return 0;
 }
+
+int64 dlb_difftime(int64 start_time, int64 end_time)
+{
+return abs((end_time-start_time));
+}
+
 }

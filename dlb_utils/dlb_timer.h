@@ -57,5 +57,6 @@ bool is_timeout();
 //functions...
 void dlb_wait(int64 timeout, uint32 dlb_time=dlb_timer_ms);
 int64 dlb_gettimestamp(uint32 time_type=dlb_timer_ms);
+int64 dlb_difftime(int64 start_time, int64 end_time=dlb_gettimestamp());
 }
 #endif
