@@ -43,6 +43,7 @@
     <ClCompile Include="dlb_main.cpp" />
     <ClCompile Include="dlb_math.cpp" />
     <ClCompile Include="dlb_packfile.cpp" />
+    <ClCompile Include="dlb_scoped_function.cpp" />
     <ClCompile Include="dlb_serializer.cpp" />
     <ClCompile Include="dlb_sound.cpp" />
     <ClCompile Include="dlb_sound_positioning.cpp" />
@@ -76,6 +77,7 @@
     <ClInclude Include="dlb_main.h" />
     <ClInclude Include="dlb_math.h" />
     <ClInclude Include="dlb_packfile.h" />
+    <ClInclude Include="dlb_scoped_function.h" />
     <ClInclude Include="dlb_serializer.h" />
     <ClInclude Include="dlb_sound.h" />
     <ClInclude Include="dlb_sound_positioning.h" />

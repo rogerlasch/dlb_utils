@@ -21,9 +21,6 @@
     <ClCompile Include="dlb_dictionary.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="dlb_doublevector.cpp">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
     <ClCompile Include="dlb_key.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
@@ -31,9 +28,6 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="dlb_math.cpp">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
-    <ClCompile Include="dlb_measure.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="dlb_serializer.cpp">
@@ -78,9 +72,6 @@
     <ClCompile Include="dlb_filesystem.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="dlb_win32.cpp">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
     <ClCompile Include="dlb_packfile.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
@@ -117,15 +108,15 @@
     <ClCompile Include="dlb_speak.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="dlb_scoped_function.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlb_deserializer.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="dlb_dictionary.h">
-      <Filter>Arquivos de Origem</Filter>
-    </ClInclude>
-    <ClInclude Include="dlb_doublevector.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="dlb_key.h">
@@ -135,9 +126,6 @@
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="dlb_math.h">
-      <Filter>Arquivos de Origem</Filter>
-    </ClInclude>
-    <ClInclude Include="dlb_measure.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="dlb_serializer.h">
@@ -188,9 +176,6 @@
     <ClInclude Include="dlb_filesystem.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="dlb_win32.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
-    </ClInclude>
     <ClInclude Include="dlb_packfile.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
@@ -222,6 +207,9 @@
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="dlb_speak.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="dlb_scoped_function.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>

@@ -26,6 +26,7 @@
 #include"dlb_packfile.h"
 #include"dlb_serializer.h"
 #include"dlb_timer.h"
+#include"dlb_scoped_function.h"
 #include"dlb_event.h"
 #include"dlb_worker.h"
 #include"dlb_vector.h"
