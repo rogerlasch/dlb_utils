@@ -1,0 +1,9 @@
+
+
+
+Em breve teremos versionamento aqui.
+Corrigido bug com dlb_curl_http_get, que desativava a libcurl por acidente.
+Adicionado dlb_curl_http_post!
+Adicionado dlb_curl_url_encode e decode... O useragent foi modificado nas duas funções, e agora o followlocation é true.
+Removido libcurl e sqlite3 da pasta libs. Agora que descobri as vantagens do vcpkg, não precisamos mais delas por aí.
+A pasta libs fica para bibliotecas que não estão no vcpkg ou para coisas pontuais como bass e bass_fx.

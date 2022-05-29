@@ -106,40 +106,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_lite|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -256,7 +256,7 @@
       <Path>$(ProjectDir)..\logs\$(MSBuildProjectName).txt</Path>
     </BuildLog>
     <Lib>
-      <AdditionalDependencies>MSVCRT.lib;vcruntime.lib;Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;bass.lib;bass_fx.lib;Tolk.lib;sqlite3.lib;libcurl_a.lib;</AdditionalDependencies>
+      <AdditionalDependencies>bass.lib;bass_fx.lib;Tolk.lib;sqlite3.lib;libcurl.lib;</AdditionalDependencies>
       <RemoveObjects>dlb_timer.obj;dlb_task_manager.obj;dlb_task.obj;dlb_string_manager.obj;dlb_state.obj;dlb_sql.obj;dlb_sound_positioning.obj;dlb_sound.obj;dlb_serializer.obj;dlb_measure.obj;dlb_math.obj;dlb_log.obj;dlb_key.obj;dlb_http.obj;dlb_dlb_dictvalue.obj;dlb_dictionary.obj;dlb_deserializer.obj;dlb_file_loader.obj;dlb_filesystem.obj;dlb_window.obj;dlb_tab.obj;dlb_retangle.obj;dlb_point2d.obj;dlb_listbox.obj;dlb_label.obj;dlb_control.obj;dlb_checkbox.obj;dlb_button.obj;dlb_wstring_manager.obj;dlb_win32.obj;dlb_vector.obj;</RemoveObjects>
       <SubSystem>Native</SubSystem>
       <IgnoreSpecificDefaultLibraries>vcruntime.lib;MSVCRT.lib;LIBCMT.lib;</IgnoreSpecificDefaultLibraries>
