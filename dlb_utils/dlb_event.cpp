@@ -1,13 +1,19 @@
 
 
-#include<safe_ptr.h>
+#include<list>
+#include<shared_mutex>
+#include<mutex>
 #include"dlb_types.h"
+#include"dlb_timer.h"
+#include"dlb_worker.h"
 #include"dlb_event.h"
+
 
 using namespace std;
 namespace dlb
 {
-static safe_ptr<list<dlb_event*>> dlb_events;
+static list<dlb_event*> dlb_events;
+static shared_mutex mtx_event;
 
 dlb_event::dlb_event()
 {
@@ -36,6 +42,7 @@ void dlb_event::reset()
 this->id=0;
 this->type=dlb_event_default;
 this->timestamp=0;
+this->worker=NULL;
 }
 
 
@@ -51,53 +58,53 @@ dlb_event_send(ev);
 
 void dlb_event_send(dlb_event* ev)
 {
-try
-{
 if(ev==NULL)
 {
 return;
 }
-lock_timed_any_infinity locked(dlb_events);
-dlb_events->push_back(ev);
-} catch(const exception& e) {
-cout<<e.what()<<endl;
+unique_lock<shared_mutex> lck(mtx_event);
+ev->timestamp=dlb_gettimestamp(dlb_timer_ms);
+dlb_events.push_back(ev);
+if(dlb_events.size()==1)
+{
+dlb_worker_set_can_state(dlb_worker_can_work);
 }
 }
 
 bool dlb_event_get(dlb_event** ev)
 {
-try
-{
 if(ev==NULL)
 {
 return false;
 }
-lock_timed_any_infinity locked(dlb_events);
-if(dlb_events->size()==0)
+unique_lock<shared_mutex> lck(mtx_event);
+if(dlb_events.size()==0)
 {
 return false;
 }
-*ev=*dlb_events->begin();
-dlb_events->erase(dlb_events->begin());
-} catch(const exception& e) {
-cout<<e.what()<<endl;
+*ev=*dlb_events.begin();
+dlb_events.erase(dlb_events.begin());
+if(dlb_events.size()==0)
+{
+dlb_worker_set_can_state(dlb_worker_can_pause);
 }
 return true;
 }
 
-dwparam dlb_event_count()
+uint32 dlb_event_count()
 {
-return dlb_events->size();
+shared_lock lck(mtx_event);
+return dlb_events.size();
 }
 
 void dlb_event_cleanup()
 {
-lock_timed_any_infinity locked(dlb_events);
-for(auto it=dlb_events->begin(); it!=dlb_events->end(); ++it)
+unique_lock<shared_mutex> lck(mtx_event);
+for(auto it=dlb_events.begin(); it!=dlb_events.end(); ++it)
 {
 delete (*it);
 }
-dlb_events->clear();
+dlb_events.clear();
 }
 
 }

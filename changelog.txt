@@ -1,5 +1,9 @@
 
 
+07/06/2022:
+Atualiza dlb_event e dlb_worker para uma versão mais nova.
+
+
 
 Em breve teremos versionamento aqui.
 Corrigido bug com dlb_curl_http_get, que desativava a libcurl por acidente.

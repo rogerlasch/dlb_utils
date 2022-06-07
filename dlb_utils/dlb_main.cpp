@@ -1,5 +1,5 @@
 
-#define CURL_STATICLIB
+//#define CURL_STATICLIB
 #include<curl/curl.h>
 #include<safe_ptr.h>
 #include<Tolk.h>
@@ -8,8 +8,8 @@
 #include"dlb_sound.h"
 #endif
 #include"dlb_http.h"
-#include"dlb_event.h"
 #include"dlb_worker.h"
+#include"dlb_event.h"
 #include"dlb_log.h"
 
 

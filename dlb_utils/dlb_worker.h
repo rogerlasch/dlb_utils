@@ -5,6 +5,7 @@
 *Eles são úteis para lidar com a fila de eventos da dlb. Você informa uma função para processar os eventos e quantos workers quer que cuidem da fila, e deixe o resto por conta deles.
 *Escrito por Róger (rogerlasch@gmail.com) em setembro de 2021.
 *Este arquivo faz parte da dlb_utils, uma biblioteca de utilidades. Use por sua conta e risco!
+*Atualizado em março e junho de 2022
 **/
 
 #ifndef DLB_WORKER_H
@@ -12,7 +13,7 @@
 
 #include<future>
 #include<functional>
-#include"safe_ptr.h"
+#include"dlb_basic_flags.h"
 
 namespace dlb
 {
@@ -20,15 +21,22 @@ namespace dlb
 #ifndef DLB_EVENT_H
 class dlb_event;
 #endif
-
 typedef std::function<void(dlb_event* ev)> dlb_event_callback;
+
+enum dlb_worker_can_work_returns
+{
+dlb_worker_can_stop=0,//Interrompa o trabalho a sim que puder...
+dlb_worker_can_checkup,//Acorde e verifique se não é você  que deve ser encerrado.
+dlb_worker_can_pause,//Não à mais trabalho no momento, vá dormir!
+dlb_worker_can_work//Acorde, tem trabalho à ser feito!
+};
 
 enum dlb_worker_flags
 {
 dlb_worker_paused=(1<<0),
 dlb_worker_active=(1<<1),
-//reservado, não usar...
-dlb_worker_stop_work=(1<<2),
+//Não usar esta flag...
+dlb_worker_stop_work=(1<<2)
 };
 
 enum dlb_worker_stop_result
@@ -51,44 +59,46 @@ dlb_worker_info& operator=(const dlb_worker_info& info);
 void reset();
 };
 
-
-class dlb_worker
+class dlb_worker : public dlb_basic_flags
 {
 private:
-std::atomic<uint32> id;
-std::atomic<uint32> flags;
-safe_ptr<std::string> name;
-safe_ptr<dlb_worker_info> info;
+uint32 id;
+std::string name;
+dlb_worker_info winfo;
 dlb_event_callback evcall;
 std::future<void> handle;
-std::mutex mtx;
+mutable std::shared_mutex mtx;
 public:
-dlb_worker(uint32 id=0, const std::string& name="", uint32 flags=0, dlb_event_callback evcall=NULL);
+dlb_worker(uint32 id=0, uint32 flags=0, const std::string& name="", dlb_event_callback evcall=NULL);
 dlb_worker(const dlb_worker& dw)=delete;
 dlb_worker& operator=(const dlb_worker& dw)=delete;
 virtual ~dlb_worker();
-uint32 get_id()const;
-uint32 getflags()const;
-std::string getname()const;
-bool getinfo(dlb_worker_info* winfo)const;
-void set_id(uint32 id);
-void setname(const std::string& name);
-void set_evcall(dlb_event_callback evcall);
+void setId(uint32 id);
+uint32 getId()const;
+void setName(const std::string& name);
+std::string getName()const;
+void setEvCall(dlb_event_callback evcall);
+dlb_event_callback getEvCall()const;
+bool getInfo(dlb_worker_info* info);
 uint32 stop(uint32 timeout=0);
 uint32 pause();
 bool resume();
-bool ispaused()const;
-bool isstopped()const;
+bool isPaused()const;
+bool isStopped()const;
+bool isActive()const;
 private:
-bool continue_loop()const;
-void worker_loop();
+bool continueLoop()const;
+void workerLoop();
 };
 
+void dlb_worker_set_can_state(uint32 wstate);
+uint32 dlb_worker_get_can_state();
+bool dlb_worker_is_awakening();
 uint32 dlb_worker_create(const std::string& name, uint32 flags, dlb_event_callback evcall);
 uint32 dlb_worker_create(uint32 n_workers, uint32 flags, dlb_event_callback evcall);
 uint32 dlb_worker_create(uint32 n_workers, uint32 flags, dlb_event_callback evcall, std::vector<uint32>& ids);
 bool dlb_worker_exists(uint32 id);
-dwparam dlb_worker_count();
+uint32 dlb_worker_count();
 uint32 dlb_worker_stop_n(uint32 id);
 uint32 dlb_worker_stop(uint32 n_workers);
 uint32 dlb_worker_pause(uint32 id);

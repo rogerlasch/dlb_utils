@@ -1,20 +1,22 @@
 
 
-#include<safe_ptr.h>
+
+#include<condition_variable>
+#include<unordered_map>
 #include"dlb_types.h"
 #include"dlb_timer.h"
-#include"dlb_event.h"
 #include"dlb_worker.h"
-#include"safe_ptr.h"
-
+#include"dlb_event.h"
 
 using namespace std;
-
 namespace dlb
 {
-static safe_ptr<map<uint32, dlb_worker*>> dlb_workers;
+static uint32 dlb_worker_state=0;
+static unordered_map<uint32, dlb_worker*> dlb_workers;
+static shared_mutex mtx_workers;
+static shared_mutex mtx_wstate;
+static condition_variable cv_workers;
 
-//The dlb_worker_info class
 dlb_worker_info::dlb_worker_info()
 {
 this->reset();
@@ -42,161 +44,200 @@ this->average_executiontime=0;
 
 //The dlb_worker class
 
-dlb_worker::dlb_worker(uint32 id, const string& Name, uint32 lags, dlb_event_callback evcall)
+dlb_worker::dlb_worker(uint32 id, uint32 flags, const string& name, dlb_event_callback evcall)
+:dlb_basic_flags(0)
 {
-this->id.store(id);
-name->resize(0);
-name->append(Name);
-this->flags.store(flags);
-info->reset();
-unique_lock<mutex> lck(mtx);
-this->evcall=evcall;
-if((flags.load()&dlb_worker_paused)==0)
+setName(name);
+setId(id);
+setEvCall(evcall);
+this->replace_flags(flags);
+if(!flag_contains(dlb_worker_paused))
 {
-handle=async(&dlb_worker::worker_loop, this);
+this->setflag(dlb_worker_paused);
+this->resume();
 }
 }
 
 dlb_worker::~dlb_worker()
 {
+if(this->isActive())
+{
 this->stop(100);
 }
-
-uint32 dlb_worker::get_id()const
-{
-return this->id.load();
 }
 
-uint32 dlb_worker::getflags()const
+void dlb_worker::setId(uint32 id)
 {
-return this->flags.load();
+unique_lock<shared_mutex> lck(mtx);
+this->id=id;
 }
 
-string dlb_worker::getname()const
+uint32 dlb_worker::getId()const
 {
-return name->substr(0, name->size());
+shared_lock lck(this->mtx);
+return this->id;
 }
 
-bool dlb_worker::getinfo(dlb_worker_info* winfo)const
+void dlb_worker::setName(const string& name)
 {
-if(winfo==NULL)
+unique_lock<shared_mutex> lck(mtx);
+this->name=name;
+}
+
+string dlb_worker::getName()const
+{
+shared_lock lck(this->mtx);
+return this->name;
+}
+
+void dlb_worker::setEvCall(dlb_event_callback evcall)
+{
+unique_lock<shared_mutex> lck(mtx);
+this->evcall=evcall;
+}
+
+dlb_event_callback dlb_worker::getEvCall()const
+{
+shared_lock lck(this->mtx);
+return this->evcall;
+}
+
+bool dlb_worker::getInfo(dlb_worker_info* info)
+{
+if(info==NULL)
 {
 return false;
 }
-winfo->events=info->events;
-winfo->total_executiontime=info->total_executiontime;
-winfo->average_executiontime=info->average_executiontime;
+*info=winfo;
 return true;
-}
-
-void dlb_worker::set_id(uint32 id)
-{
-this->id.store(id);
-}
-
-void dlb_worker::setname(const string& name)
-{
-this->name->clear();
-this->name->append(name);
-}
-
-void dlb_worker::set_evcall(dlb_event_callback evcall)
-{
-unique_lock<mutex> lck(mtx);
-evcall=evcall;
 }
 
 uint32 dlb_worker::stop(uint32 timeout)
 {
-if(this->isstopped())
+if(this->isStopped())
 {
 return dlb_worker_ready;
 }
-if((this->flags.load()&dlb_worker_stop_work)==0)
-{
-this->flags.store(this->flags.load()|dlb_worker_stop_work);
-}
+this->setflag(dlb_worker_stop_work);
+cv_workers.notify_all();
 return static_cast<uint32>(this->handle.wait_for(chrono::milliseconds(timeout)));
 }
 
 uint32 dlb_worker::pause()
 {
-if((this->ispaused())||((this->flags.load()&dlb_worker_stop_work)>0))
+if(this->isPaused())
 {
 return dlb_worker_ready;
 }
-this->flags.store(this->flags.load()|dlb_worker_paused);
+this->setflag(dlb_worker_paused);
+cv_workers.notify_all();
 uint32 result=static_cast<uint32>(this->handle.wait_for(chrono::milliseconds(20)));
 if(result!=dlb_worker_ready)
 {
-this->flags.store(this->flags.load()^dlb_worker_paused);
+this->removeflag(dlb_worker_paused);
 }
 return result;
 }
 
 bool dlb_worker::resume()
 {
-if(!this->ispaused())
+if((this->flag_contains(dlb_worker_stop_work))||(!this->isPaused()))
 {
 return false;
 }
-if((this->flags.load()&dlb_worker_stop_work)>0)
-{
-return false;
-}
-this->flags.store(this->flags.load()^dlb_worker_paused);
-unique_lock<mutex> lck(mtx);
-this->handle=async(&dlb_worker::worker_loop, this);
+unique_lock<shared_mutex> lck(this->mtx);
+this->removeflag(dlb_worker_paused);
+this->removeflag(dlb_worker_stop_work);
+this->handle=async(&dlb_worker::workerLoop, this);
 return true;
 }
 
-bool dlb_worker::ispaused()const
+bool dlb_worker::isPaused()const
 {
-return (this->flags.load()&dlb_worker_paused)>0;
+return flag_contains(dlb_worker_paused);
 }
 
-bool dlb_worker::isstopped()const
+bool dlb_worker::isStopped()const
 {
-return ((ispaused()==false)&&((flags.load()&dlb_worker_active)==0));
+return !flag_contains(dlb_worker_active);
 }
 
-bool dlb_worker::continue_loop()const
+bool dlb_worker::isActive()const
 {
-return (((this->flags.load()&dlb_worker_paused)>0||(flags.load()&dlb_worker_stop_work)>0||(flags.load()&dlb_worker_active)==0) ? false : true);
+return flag_contains(dlb_worker_active);
 }
 
-void dlb_worker::worker_loop()
+bool dlb_worker::continueLoop()const
 {
-this->flags.store(this->flags.load()|dlb_worker_active);
+return ((this->flag_contains(dlb_worker_paused)||this->flag_contains(dlb_worker_stop_work)||!this->flag_contains(dlb_worker_active)) ? false : true);
+}
+
+void dlb_worker::workerLoop()
+{
+this->setflag(dlb_worker_active);
+mutex mtx_work;
+unique_lock<mutex> lck(mtx_work);
+while(this->continueLoop())
+{
+switch(dlb_worker_get_can_state())
+{
+case dlb_worker_can_stop:
+case dlb_worker_can_pause:
+case dlb_worker_can_checkup:
+{
+if(this->continueLoop())
+{
+cv_workers.wait(lck);
+}
+break;
+}
+case dlb_worker_can_work:
+{
 dlb_event* ev=NULL;
-while(continue_loop())
+if(dlb_event_get(&ev))
 {
-this_thread::sleep_for(chrono::microseconds(5));
-while(dlb_event_get(&ev))
-{
-unique_lock<mutex> lck(mtx);
-info->events++;
+unique_lock<shared_mutex> lck(this->mtx);
+winfo.events++;
 if(evcall)
 {
-int64 start=dlb_gettimestamp();
+ev->worker=this;
+int64 start=dlb_gettimestamp(dlb_timer_ms);
 evcall(ev);
-int64 end=dlb_gettimestamp();
-info->total_executiontime+=(end-start);
-info->average_executiontime=(info->total_executiontime/info->events);
+int64 end=dlb_gettimestamp(dlb_timer_ms);
+winfo.total_executiontime+=(end-start);
+winfo.average_executiontime=(winfo.total_executiontime/winfo.events);
 }
 lck.unlock();
 delete ev;
 ev=NULL;
-if(!continue_loop())
-{
+}
 break;
 }
 }
 }
+removeflag(dlb_worker_active);
 }
 
+//Functions...
 
-//Functions
+void dlb_worker_set_can_state(uint32 wstate)
+{
+unique_lock<shared_mutex> lck(mtx_wstate);
+dlb_worker_state=wstate;
+cv_workers.notify_all();
+}
+
+uint32 dlb_worker_get_can_state()
+{
+shared_lock lck(mtx_wstate);
+return dlb_worker_state;
+}
+
+bool dlb_worker_is_awakening()
+{
+uint32 x=dlb_worker_get_can_state();
+return x==dlb_worker_can_checkup||dlb_worker_can_work;
+}
 
 static uint32 dlb_worker_generate_id()
 {
@@ -208,9 +249,9 @@ return x;
 uint32 dlb_worker_create(const std::string& name, uint32 flags, dlb_event_callback evcall)
 {
 uint32 id=dlb_worker_generate_id();
-dlb_worker* wk=new dlb_worker(id, name, flags, evcall);
-lock_timed_any_infinity locked(dlb_workers);
-dlb_workers->insert(make_pair(id, wk));
+dlb_worker* wk=new dlb_worker(id, flags, name, evcall);
+unique_lock<shared_mutex> lck(mtx_workers);
+dlb_workers.insert(make_pair(id, wk));
 return id;
 }
 
@@ -223,8 +264,7 @@ dlb_worker_create("", flags, evcall);
 return n_workers;
 }
 
-uint32 dlb_worker_create(uint32 n_workers, uint32 flags, dlb_event_callback
-evcall, std::vector<uint32>& ids)
+uint32 dlb_worker_create(uint32 n_workers, uint32 flags, dlb_event_callback evcall, std::vector<uint32>& ids)
 {
 ids.clear();
 ids.reserve(n_workers);
@@ -237,13 +277,14 @@ return n_workers;
 
 bool dlb_worker_exists(uint32 id)
 {
-lock_timed_any_infinity locked(dlb_workers);
-return dlb_workers->count(id)>0;
+shared_lock lck(mtx_workers);
+return dlb_workers.find(id)!=dlb_workers.end();
 }
 
-dwparam dlb_worker_count()
+uint32 dlb_worker_count()
 {
-return dlb_workers->size();
+shared_lock lck(mtx_workers);
+return dlb_workers.size();
 }
 
 uint32 dlb_worker_stop(uint32 id)
@@ -252,12 +293,12 @@ if(!dlb_worker_exists(id))
 {
 return dlb_worker_handle;
 }
-lock_timed_any_infinity locked(dlb_workers);
-dlb_worker* wk=dlb_workers->at(id);
+unique_lock<shared_mutex> lck(mtx_workers);
+dlb_worker* wk=dlb_workers.at(id);
 uint32 res=wk->stop(20);
 if(res==dlb_worker_ready)
 {
-dlb_workers->erase(id);
+dlb_workers.erase(id);
 delete wk;
 }
 return res;
@@ -278,16 +319,16 @@ for(uint32 i=0; i<n_workers; i++)
 {
 if(dlb_worker_count()>0)
 {
-if(dlb_worker_isstopped(dlb_workers->begin()->first))
+if(dlb_worker_isstopped(dlb_workers.begin()->first))
 {
-dlb_worker_stop(dlb_workers->begin()->first);
+dlb_worker_stop(dlb_workers.begin()->first);
 if(i>0)
 {
 i--;
 }
 continue;
 }
-if(dlb_worker_stop(dlb_workers->begin()->first)==dlb_worker_ready)
+if(dlb_worker_stop(dlb_workers.begin()->first)==dlb_worker_ready)
 {
 x++;
 }
@@ -302,8 +343,8 @@ if(!dlb_worker_exists(id))
 {
 return dlb_worker_handle;
 }
-lock_timed_any_infinity locked(dlb_workers);
-dlb_worker* wk=dlb_workers->at(id);
+shared_lock lck(mtx_workers);
+dlb_worker* wk=dlb_workers.at(id);
 return wk->pause();
 }
 
@@ -313,8 +354,8 @@ if(!dlb_worker_exists(id))
 {
 return false;
 }
-lock_timed_any_infinity locked(dlb_workers);
-dlb_worker* wk=dlb_workers->at(id);
+shared_lock lck(mtx_workers);
+dlb_worker* wk=dlb_workers.at(id);
 return wk->resume();
 }
 
@@ -324,7 +365,8 @@ if(!dlb_worker_exists(id))
 {
 return false;
 }
-return dlb_workers->at(id)->ispaused();
+shared_lock lck(mtx_workers);
+return dlb_workers.at(id)->isPaused();
 }
 
 bool dlb_worker_isstopped(uint32 id)
@@ -333,7 +375,8 @@ if(!dlb_worker_exists(id))
 {
 return false;
 }
-return dlb_workers->at(id)->isstopped();
+shared_lock lck(mtx_workers);
+return dlb_workers.at(id)->isStopped();
 }
 
 uint32 dlb_worker_stop_all()
@@ -341,7 +384,7 @@ uint32 dlb_worker_stop_all()
 uint32 x=0;
 while(dlb_worker_count()>0)
 {
-if(dlb_worker_stop(dlb_workers->begin()->first)==dlb_worker_ready)
+if(dlb_worker_stop(dlb_workers.begin()->first)==dlb_worker_ready)
 {
 x++;
 }
@@ -355,8 +398,8 @@ uint32 x=0;
 while(dlb_worker_count()>0)
 {
 dlb_worker_info wf;
-dlb_workers->begin()->second->getinfo(&wf);
-if(dlb_worker_stop(dlb_workers->begin()->first)==dlb_worker_ready)
+dlb_workers.begin()->second->getInfo(&wf);
+if(dlb_worker_stop(dlb_workers.begin()->first)==dlb_worker_ready)
 {
 x++;
 winfo.push_back(wf);
@@ -368,7 +411,7 @@ return x;
 uint32 dlb_worker_pause_all()
 {
 uint32 x=0;
-for(auto it=dlb_workers->begin(); it!=dlb_workers->end(); ++it)
+for(auto it=dlb_workers.begin(); it!=dlb_workers.end(); ++it)
 {
 if(dlb_worker_pause(it->first)==dlb_worker_ready)
 {
@@ -381,7 +424,7 @@ return x;
 uint32 dlb_worker_resume_all()
 {
 uint32 x=0;
-for(auto it=dlb_workers->begin(); it!=dlb_workers->end(); ++it)
+for(auto it=dlb_workers.begin(); it!=dlb_workers.end(); ++it)
 {
 if(dlb_worker_resume(it->first))
 {
@@ -397,6 +440,7 @@ if(!dlb_worker_exists(id))
 {
 return false;
 }
-return dlb_workers->at(id)->getinfo(winfo);
+shared_lock lck(mtx_workers);
+return dlb_workers.at(id)->getInfo(winfo);
 }
 }
