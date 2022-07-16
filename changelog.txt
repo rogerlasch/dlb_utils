@@ -1,4 +1,8 @@
 
+16/07/2022
+Corrigido o problema com a versão mais recente do c++ e std::format com expressões constantes.
+Adicionado propriedade extra em dlb_event. Agora é possível enviar uma string como dados também.
+
 
 07/06/2022:
 Atualiza dlb_event e dlb_worker para uma versão mais nova.

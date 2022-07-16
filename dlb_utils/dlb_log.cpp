@@ -4,9 +4,8 @@
 #include<fstream>
 #include<mutex>
 #include<iostream>
-#include<format>
-#include<fmt/core.h>
 #include"dlb_types.h"
+#include"dlb_format.h"
 #include"dlb_string.h"
 #include"dlb_config.h"
 
@@ -73,5 +72,16 @@ if(DLB_stdout)
 {
 cout<<final<<endl;
 }
+}
+
+//Assertion...
+void dlb_assert_format(const string& filename, const string& func_name, int32 line, const string& expression)
+{
+static const string str="Falha de assertion no arquivo {}, Na função {}, Linha {}. Expressão: \"{}\"";
+//Fix the bug c_7595 in vs 2022.
+//https://stackoverflow.com/questions/72314203/c7595-error-after-reinstalling-visual-studio
+string outstr=dlb_vformat(str, dlb_make_format_args(filename, func_name, line, expression));
+dlb_log_write(outstr);
+std::terminate();
 }
 }

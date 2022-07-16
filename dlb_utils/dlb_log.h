@@ -25,5 +25,13 @@ void dlb_log_write_w(const std::wstring& str);
 //Define macros para suportar argumentos variáveis com std::format.
 #define _log(str, ...) dlb_log_write(dlb_format(str, __VA_ARGS__))
 #define _log_except(f, w) dlb_log_write(dlb_format("Exceção na função {}: Descrição: {}", f, w))
+
+//Assertion...
+void dlb_assert_format(const std::string& filename, const std::string& func_name, int32 line, const std::string& expression);
+#define _dlb_assert(expr) \
+if(!(expr))\
+dlb_assert_format(__FILE__, __FUNCTION__, __LINE__, #expr);
+
+
 }
 #endif
