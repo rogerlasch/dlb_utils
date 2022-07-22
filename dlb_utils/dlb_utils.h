@@ -11,6 +11,7 @@
 #include"dlb_constantes.h"
 #include"dlb_calendar.h"
 #include"dlb_string.h"
+#include"dlb_object.h"
 #include"dlb_main.h"
 #include"dlb_filesystem.h"
 #include"dlb_file_loader.h"

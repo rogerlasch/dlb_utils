@@ -1,4 +1,6 @@
 
+22/07/2022
+Adicionado dlb_object, que fornece manipulação básica de bitflags e mutex básico com métodos para bloquear em modo de escrita ou de leitura.
 16/07/2022
 Corrigido o problema com a versão mais recente do c++ e std::format com expressões constantes.
 Adicionado propriedade extra em dlb_event. Agora é possível enviar uma string como dados também.
