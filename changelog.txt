@@ -1,4 +1,9 @@
 
+26/07/2022
+Adicionado const em flag_contains em dlb_object
+Adicionado dlb_scoped_flags, que remove as flags especificadas ao deixar o escopo...
+Adicionado dlb_winprocess, que redireciona a saída padrão de um processo filho no windows.
+
 22/07/2022
 Adicionado dlb_object, que fornece manipulação básica de bitflags e mutex básico com métodos para bloquear em modo de escrita ou de leitura.
 16/07/2022

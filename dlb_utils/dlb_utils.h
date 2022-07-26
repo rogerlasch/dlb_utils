@@ -12,6 +12,7 @@
 #include"dlb_calendar.h"
 #include"dlb_string.h"
 #include"dlb_object.h"
+#include"dlb_scoped_flags.h"
 #include"dlb_main.h"
 #include"dlb_filesystem.h"
 #include"dlb_file_loader.h"
@@ -35,6 +36,7 @@
 
 #include"dlb_sql.h"
 #include"dlb_speak.h"
+#include"dlb_winprocess.h"
 #if !defined(_DLB_NO_SOUND)
 #include"dlb_sound.h"
 #include"dlb_sound_positioning.h"

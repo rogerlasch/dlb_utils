@@ -55,6 +55,7 @@
     <ClCompile Include="dlb_timer.cpp" />
     <ClCompile Include="dlb_value.cpp" />
     <ClCompile Include="dlb_vector.cpp" />
+    <ClCompile Include="dlb_winprocess.cpp" />
     <ClCompile Include="dlb_worker.cpp" />
     <ClCompile Include="dlb_wstring_manager.cpp" />
     <ClCompile Include="dlb_speak.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="dlb_types.h" />
     <ClInclude Include="dlb_value.h" />
     <ClInclude Include="dlb_vector.h" />
+    <ClInclude Include="dlb_winprocess.h" />
     <ClInclude Include="dlb_worker.h" />
     <ClInclude Include="dlb_wstring_manager.h" />
     <ClInclude Include="dlb_speak.h" />
