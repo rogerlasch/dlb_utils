@@ -1,113 +1,145 @@
 
-/**
-*Classe para executar um processo filho, com opção de recuperar o stdout.
-*Vide https://stackoverflow.com/questions/10866944/how-can-i-read-a-child-processs-output
-*Escrito por Róger (rogerlasch@gmail.com) em julho de 2022.
-*Este arquivo faz parte da dlb_utils, uma biblioteca de utilidades. Use por sua conta e risco!
-**/
-
 #include<windows.h>
-#include<sstream>
 #include<stdlib.h>
 #include"dlb_types.h"
 #include"dlb_timer.h"
-#include"dlb_object.h"
+#include"dlb_log.h"
+#include"dlb_math.h"
 #include"dlb_winprocess.h"
 
 using namespace std;
-
 namespace dlb
 {
 dlb_winprocess::dlb_winprocess()
 {
+pid=0;
+tid=0;
+exit_code=0;
+hstate.store(dlb_win_default);
+cmdline="";
+buffer.clear();
+hinput=NULL;
+houtput=NULL;
 hprocess=NULL;
-this->replace_flags(0);
+hthread=NULL;
 }
 
 dlb_winprocess::~dlb_winprocess()
 {
-internal_cleanup();
+switch(getState())
+{
+case dlb_win_active:
+case dlb_win_canceling:
+{
+this->closeProcess();
+handle.get();
+break;
+}
+}
 }
 
 void dlb_winprocess::cleanup()
 {
-this->internal_cleanup();
-this->setexitcode(0);
-this->cmdline="";
+pid=0;
+tid=0;
+exit_code=0;
+hstate.store(dlb_win_default);
+cmdline="";
+buffer.clear();
+hinput=NULL;
+houtput=NULL;
+hprocess=NULL;
+hthread=NULL;
 }
 
-bool dlb_winprocess::isactive()
+void dlb_winprocess::setState(uint32 state)
 {
-if(this->internal_isactive())
-{
-this->internal_read();
-}
-else
-{
-this->internal_read(true);
-}
-return this->flag_contains(dlb_win_active);
+this->hstate.store(state);
 }
 
-bool dlb_winprocess::isread()const
+uint32 dlb_winprocess::getState()const
 {
-return this->flag_contains(dlb_win_read);
+return this->hstate.load();
 }
 
-uint32 dlb_winprocess::getpid()const
+uint32 dlb_winprocess::getPid()const
 {
-auto lck=this->read_lock();
 return this->pid;
 }
 
-uint32 dlb_winprocess::gettid()const
+uint32 dlb_winprocess::getTid()const
 {
-auto lck=this->read_lock();
 return this->tid;
 }
 
-int32 dlb_winprocess::getexitcode()const
+int32 dlb_winprocess::getExitCode()const
 {
-auto lck=this->read_lock();
 return this->exit_code;
 }
 
-void dlb_winprocess::setexitcode(int32 exit_code)
+string dlb_winprocess::getCmdLine()const
 {
-auto lck=this->write_lock();
-this->exit_code=exit_code;
-}
-
-string dlb_winprocess::get_cmdline()const
-{
-auto lck=this->read_lock();
 return this->cmdline;
 }
 
-string dlb_winprocess::getline()const
+string dlb_winprocess::getLine()const
 {
-dlb_read_lock lck(this->mtx_io);
-string str="";
-std::getline(hbuffer, str);
-return str;
+string ss;
+std::getline(buffer, ss);
+return ss;
 }
 
-string dlb_winprocess::getoutput()const
+string dlb_winprocess::getOutput()const
 {
-dlb_read_lock lck(this->mtx_io);
-return hbuffer.str();
+return buffer.str();
+}
+
+bool dlb_winprocess::closeProcess()
+{
+switch(getState())
+{
+case dlb_win_default:
+case dlb_win_finished:
+{
+return true;
+}
+case dlb_win_active:
+case dlb_win_canceling:
+{
+if(TerminateProcess(hprocess, 1))
+{
+CloseHandle(hinput);
+CloseHandle(hprocess);
+CloseHandle(hthread);
+hprocess=NULL;
+hthread=NULL;
+hinput=NULL;
+return true;
+}
+return false;
+}
+}
+return false;
 }
 
 bool dlb_winprocess::run(const string& cmdline)
 {
-if((this->flag_contains(dlb_win_active))||(cmdline.size()==0))
+if(cmdline.size()==0)
 {
 return false;
 }
-auto lck=this->write_lock();
-this->setflag(dlb_win_active);
-this->removeflag(dlb_win_read);
-                               this->removeflag(dlb_win_cansel);
+uint32 h=getState();
+bool onrun=false;
+if((h==dlb_win_default)||(h==dlb_win_finished))
+{
+onrun=true;
+}
+if(!onrun)
+{
+return false;
+}
+this->cleanup();
+this->setState(dlb_win_active);
 PROCESS_INFORMATION pinfo;
 STARTUPINFOA startinfo;
 SECURITY_ATTRIBUTES saAttr;
@@ -117,14 +149,14 @@ saAttr.bInheritHandle=TRUE;
 saAttr.lpSecurityDescriptor=NULL;
 if(!CreatePipe(&hinput, &houtput, &saAttr, 5000))
     {
-this->removeflag(dlb_win_active);
+this->setState(dlb_win_default);
 return false;
     }
 if(!SetHandleInformation(hinput, HANDLE_FLAG_INHERIT, 0))
 {
 CloseHandle(hinput);
 CloseHandle(houtput);
-this->removeflag(dlb_win_active);
+this->setState(dlb_win_default);
 return false;
 }
 memset(&startinfo, 0, sizeof(startinfo));
@@ -137,7 +169,7 @@ if(!CreateProcessA(NULL, (char*)cmdline.c_str(), NULL, NULL, TRUE,         CREAT
 {
 CloseHandle(hinput);
 CloseHandle(houtput);
-this->removeflag(dlb_win_active);
+this->setState(dlb_win_default);
 return false;
 }
     CloseHandle(houtput);
@@ -146,77 +178,77 @@ this->tid=pinfo.dwThreadId;
 this->hprocess=pinfo.hProcess;
 this->hthread=pinfo.hThread;
 this->cmdline=cmdline;
+try {
+this->handle=async(&dlb_winprocess::onLoop, this);
+} catch(const exception& e) {
+CloseHandle(hinput);
+CloseHandle(houtput);
+hprocess=NULL;
+TerminateProcess(hprocess, 1);
+this->cleanup();
+this->setState(dlb_win_default);
+_log_except(__FUNCTION__, e.what());
+return false;
+}
 return true;
 }
 
 void dlb_winprocess::wait()
 {
-while(this->isactive())
+while(true)
 {
+uint32 h=getState();
+if((h==dlb_win_default)||(h==dlb_win_finished))
+{
+break;
+}
 this_thread::sleep_for(chrono::milliseconds(5));
 }
 }
 
-bool dlb_winprocess::wait_for(uint32 ms)
+uint32 dlb_winprocess::wait_for(uint32 ms)
 {
 int64 start=dlb_gettimestamp();
-while(this->isactive())
+while((dlb_gettimestamp()-start)<ms)
 {
-this_thread::sleep_for(chrono::microseconds(100));
-if((dlb_gettimestamp()-start)>ms)
+if((getState()==dlb_win_default)||(getState()==dlb_win_finished))
 {
 break;
 }
+dlb_wait(dlb_random_int32(1, 10));
 }
-return this->flag_contains(dlb_win_active);
+return getState();
 }
 
-bool dlb_winprocess::internal_isactive()
+void dlb_winprocess::onLoop()
 {
-uint32 res=WaitForSingleObject(this->hprocess, 5);
+while(((getState()==dlb_win_active)||(this->getState()==dlb_win_canceling)))
+{
+uint32 res=WaitForSingleObject(this->hprocess, 2);
+if(this->getState()==dlb_win_canceling)
+{
+this->closeProcess();
+break;
+}
 switch(res)
 {
 case WAIT_ABANDONED:
 case WAIT_FAILED:
 {
-this->removeflag(dlb_win_active);
-this->setflag(dlb_win_read);
-internal_cleanup();
+this->closeProcess();
+setState(dlb_win_finished);
 break;
 }
 case WAIT_OBJECT_0:
 {
 int32 x=0;
 GetExitCodeProcess(hprocess, (LPDWORD)&x);
-this->setexitcode(x);
-internal_cleanup();
-this->removeflag(dlb_win_active);
-this->setflag(dlb_win_read);
+this->exit_code=x;
+this->closeProcess();
+this->setState(dlb_win_finished);
 break;
 }
-case WAIT_TIMEOUT:
-{
-break;
-}
-}
-return this->flag_contains(dlb_win_active);
-}
-
-void dlb_winprocess::internal_read(bool read_all)
-{
-dlb_write_lock lck(this->mtx_io);
-if(read_all==false)
-{
-string str="";
-str.resize(1024*4);
-uint32 size=0;
-if((!ReadFile(hinput, &str[0], str.size(), (LPDWORD)&size, NULL))||(size==0))
-{
-return;
-}
-hbuffer.write(str.c_str(), size);
-}
-else
+default:
 {
 string str="";
 str.resize(1024*4);
@@ -227,22 +259,11 @@ if(size==0)
 {
 continue;
 }
-hbuffer.write(str.c_str(), size);
+buffer.write(str.c_str(), size);
+}
+break;
 }
 }
 }
-
-void dlb_winprocess::internal_cleanup()
-{
-auto lck=this->write_lock();
-CloseHandle(hprocess);
-CloseHandle(hthread);
-CloseHandle(hinput);
-hprocess=NULL;
-hthread=NULL;
-hinput=NULL;
-houtput=NULL;
-pid=0;
-tid=0;
 }
 }
